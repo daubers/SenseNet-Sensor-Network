@@ -23,19 +23,24 @@ char clientId[] = "prototype1";
 
 // ------------- General Settings -------------
 
-int sleep_length = 30000000;
+unsigned long sleep_length = 120000000;
 
 #define MQTT_KEEPALIVE 300000
 
 // End Settings
 
+void callback(char* topic, byte* payload, unsigned int length);
+
 WiFiClient wifi_client;
 PubSubClient client(server, 1883, callback, wifi_client);
 DHT dht(DHT_PIN, DHTTYPE, 11);
+static char ssid2[20];
+int fail_count=0;
 
 void setup() {
   // setup wifi
-  if (strcmp (WiFi.SSID(), ssid) != 0) {
+  WiFi.SSID().toCharArray(ssid2,20);
+  if (strcmp (ssid2, ssid) != 0) {
     WiFi.begin(ssid, password);
   }
   while (WiFi.status() != WL_CONNECTED) {
@@ -46,6 +51,11 @@ void setup() {
   digitalWrite(DHT_POWER_PIN, HIGH);
   delay(100);
   dht.begin();
+}
+
+void sleep(){
+  digitalWrite(DHT_POWER_PIN, LOW);
+  ESP.deepSleep(sleep_length);
 }
 
 void loop() {
@@ -63,6 +73,12 @@ void loop() {
   // Read temperature as Celsius (the default)
   float t = dht.readTemperature();
   while (isnan(t)){
+    if (fail_count >= 5){
+      client.publish(topic_root, "Too many failures, going back to sleep");
+      sleep();
+      fail_count=0;
+    }
+    fail_count += 1;
     delay(2000);
     h = dht.readHumidity();
     // Read temperature as Celsius (the default)
@@ -84,9 +100,10 @@ void loop() {
   client.publish(humidity_topic.c_str(), humidity);
   
   //go to sleep
-  digitalWrite(DHT_POWER_PIN, LOW);
-  ESP.deepSleep(sleep_length);
+  sleep();
 }
+
+
 
 void callback(char* topic, byte* payload, unsigned int length) {
  
