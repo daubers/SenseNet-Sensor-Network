@@ -34,8 +34,9 @@ void callback(char* topic, byte* payload, unsigned int length);
 WiFiClient wifi_client;
 PubSubClient client(server, 1883, callback, wifi_client);
 DHT dht(DHT_PIN, DHTTYPE, 11);
-static char ssid2[20];
 int fail_count=0;
+static char ssid2[20];
+
 
 void setup() {
   // setup wifi
@@ -75,8 +76,8 @@ void loop() {
   while (isnan(t)){
     if (fail_count >= 5){
       client.publish(topic_root, "Too many failures, going back to sleep");
-      sleep();
       fail_count=0;
+      sleep();
     }
     fail_count += 1;
     delay(2000);
