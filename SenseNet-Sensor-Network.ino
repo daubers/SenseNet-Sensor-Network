@@ -10,15 +10,16 @@ const char* password = "sensenet192";
 // ------------- MQTT Settings -------------
 
 char server[] = "mqtt1.sensenet.co.uk";
-char topic_root[] = "sensenet/esp8266/1/";
-char clientId[] = "prototype1";
+char topic_root[] = "sensenet/esp8266/kitchen/";
+char topic_fail[] = "sensenet/esp8266/kitchen/error/";
+char clientId[] = "kitchen_node";
 
 // ------------- Pin Settings -------------
 
 #define DHT_PIN 2
 #define DHT_POWER_PIN 15
-#define DHTTYPE DHT11   // DHT 11
-//#define DHTTYPE DHT22   // DHT 22  (AM2302), AM2321
+//#define DHTTYPE DHT11   // DHT 11
+#define DHTTYPE DHT22   // DHT 22  (AM2302), AM2321
 //#define DHTTYPE DHT21   // DHT 21 (AM2301)
 
 // ------------- General Settings -------------
