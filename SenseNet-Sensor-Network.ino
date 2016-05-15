@@ -10,8 +10,9 @@ const char* password = "sensenet192";
 // ------------- MQTT Settings -------------
 
 char server[] = "mqtt1.sensenet.co.uk";
-char topic_root[] = "sensenet/esp8266/1/";
-char clientId[] = "prototype1";
+char topic_root[] = "sensenet/esp8266/livingroom/";
+char topic_fail[] = "sensenet/esp8266/livingroom/error/";
+char clientId[] = "livingroom_node";
 
 // ------------- Pin Settings -------------
 
@@ -65,7 +66,6 @@ void loop() {
     while (!!!client.connect(clientId)) {
       delay(500);
     }
-    Serial.println();
   }
 
   //read some values
@@ -84,7 +84,7 @@ void loop() {
     h = dht.readHumidity();
     // Read temperature as Celsius (the default)
     t = dht.readTemperature();
-    client.publish(topic_root, "Reading failed, retrying");
+    client.publish(topic_fail, "Reading failed, retrying");
   }
   //convert these to strings
   static char temp[9];
